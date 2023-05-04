@@ -1,0 +1,60 @@
+﻿@model DigitalPlanner.Models.FolderModel
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<style type="text/css">
+.fa_custom {
+color: #373a3c
+}
+
+.folders {
+    padding-left: 0;
+    list-style: none;
+    list-style-position: outside;
+}
+
+.folders li {
+    margin: 2px;
+}
+
+.folders li a {
+    border: 1px solid #ccc;
+}
+</style>
+@{
+    ViewBag.Title = "Folder";
+    var notes = Model.Notes;
+    var folders = Model.Folders;
+    var back = Model.ParentDirectory;
+}
+
+@if (back != null)
+{
+    <a type="button" class="btn btn-secondary" asp-area="" asp-controller="Workspace" asp-action="Folder" asp-route-directory="@back">Up</a>
+    <a type="button" class="btn btn-secondary" asp-area="" asp-controller="Workspace" asp-action="Delete" asp-route-path="@Model.Directory">Delete</a>
+}
+
+<button type="button" class="btn btn-secondary" onclick="document.getElementById('nameForm').style.display = 'block'">Add Folder</button>
+<a type="button" class="btn btn-secondary" asp-area="" asp-controller="Note" asp-action="EditNote" asp-route-path="@Model.Directory">Add Note</a>
+
+<ul class="folders">
+    @foreach(var f in folders)
+    {
+        <li><a type="button" class="btn btn-light" asp-area="" asp-controller="Workspace" asp-action="Folder" asp-route-directory="@f.Directory$@f.Name"><i class="fa fa-folder fa_custom"></i> @f.Name</a></li>
+    }
+    @foreach(var n in notes)
+    {
+        <li><a type="button" class="btn btn-light" asp-area="" asp-controller="Note" asp-action="Note" asp-route-path="@n.Directory$@n.Name">@n.Name</a></li>
+    }
+</ul>
+
+<div style="display: none; position: fixed; background: rgba(0, 0, 0, 0.5); top: 0; bottom: 0; left: 0; right: 0;" id="nameForm">
+    <div style="position: fixed; background: #FFF; border: 1px solid #000; border-radius: 0px; top: 30%; bottom: 30%; left: 30%; right: 30%; padding: 20px;">
+        <form method="get" asp-area="" asp-controller="Workspace" asp-action="AddFolder">
+            <h2>Enter name</h2>
+            <label for="name"><b>Name</b></label>
+            <input type="text" name="name" required>
+            <input type="hidden" name="directory" value="@Model.Directory" />
+            <input type="submit" value="Ok" />
+            <button type="button" onclick="document.getElementById('nameForm').style.display = 'none'">Close</button>
+        </form>
+  </div>
+</div>

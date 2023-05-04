@@ -1,0 +1,99 @@
+﻿@using System.Globalization
+@{
+    ViewBag.Title = "CalendarIndex";
+    var currentDate = Model.Date;
+    var month = currentDate.ToString("MMMM", CultureInfo.InvariantCulture);
+    var prevMonth = currentDate.AddMonths(-1);
+    var prevMonthDaysCount = DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month);
+    var monthDaysCount = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+    var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+    var firstDayWeek = (int)firstDayOfMonth.DayOfWeek;
+
+    var monday = new DateTime(2022, 3, 28);
+    var names = new string[7];
+    for (var i = 0; i < names.Length; ++i) {
+        names[i] = monday.ToString("dddd");
+        monday = monday.AddDays(1);
+    }
+
+    ViewData["Month and Year"] = month + " " + currentDate.Year.ToString();
+    var monthDays = new int[6, 7];
+    var row = 0;
+    var column = firstDayWeek - 1;
+    if (column < 0)
+        column += 7;
+    var prevMonthLastDay = column - 1;
+    for(var i = 0; i < monthDaysCount; i++)
+    {
+        monthDays[row, column] = i + 1;
+        if(++column == 7)
+        {
+            column = 0;
+            row++;
+        }
+    }
+    for(var i = prevMonthLastDay; i >= 0; i--)
+    {
+        monthDays[0, i] = prevMonthDaysCount;
+        prevMonthDaysCount--;
+    }
+    var k = 1;
+    while(row != 6)
+    {
+        monthDays[row, column] = k;
+        k++;
+        if(++column == 7)
+        {
+            column = 0;
+            row++;
+        }
+    }
+}
+
+<div class="text-center">
+    <h1 class="display-6">
+        <a class="arrow arrow-left" asp-area="" asp-controller="Calendar" asp-action="GoToMonth" asp-route-date="@currentDate.AddMonths(-1).ToString("dd-MM-yyyy")"></a>
+        <span>@ViewData["Month and Year"]</span>
+        <a class="arrow arrow-right" asp-area="" asp-controller="Calendar" asp-action="GoToMonth" asp-route-date="@currentDate.AddMonths(1).ToString("dd-MM-yyyy")"></a>
+    </h1>
+    <table style="width: 100%" class="table">
+        <tr>
+                @for (var i = 0; i < 7; ++i)
+                {
+                    <td style="width: 14%; height: 48px;">
+                        @names[i]
+                    </td>
+                }
+            </tr>
+        @for (var i = 0; i < 6; ++i)
+        {
+            <tr>
+                @for (var j = 0; j < 7; ++j)
+                {
+                    var actualDate = currentDate.ToString("MM-yyyy");
+                    switch (i)
+                    {
+                        case > 3 when monthDays[i, j] < 15:
+                            actualDate = currentDate.AddMonths(1).ToString("MM-yyyy");
+                            break;
+                        case < 3 when monthDays[i, j] > 15:
+                            actualDate = currentDate.AddMonths(-1).ToString("MM-yyyy");
+                            break;
+                    }
+
+                    var date = monthDays[i, j] + "-" + actualDate;
+                    if (monthDays[i, j] < 10)
+                    {
+                        date = '0' + date;
+                    }
+                    var path = "calendar$" + date;
+                    <td style="width: 14%; height: 48px;" class="hoverable">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Note" asp-action="Note" asp-route-path="@path">
+                            @monthDays[@i, @j]
+                        </a>
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+</div>

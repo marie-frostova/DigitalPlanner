@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "ShowNote";
+}
+@using System.Web
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model DigitalPlanner.Models.Note
+
+@{
+    var path = Model.Directory + '$' + Model.Name;
+    var back = Model.Directory;
+}
+
+<div class="container-fluid">
+    <div class="row">
+         <div class="card">
+             <div class="col col-md-12 mx-auto testing">
+                 @Html.Raw(HttpUtility.HtmlDecode(Model.Content))
+             </div>
+        </div> 
+    </div>
+</div>
+<div class="text-centered">
+    @if (back != null && back != "calendar")
+    {
+        <a type="button" class="btn btn-secondary" asp-area="" asp-controller="Workspace" asp-action="Folder" asp-route-directory="@back">Up</a>
+    }
+    <a type="button" class="btn btn-secondary" asp-area="" asp-controller="Note" asp-action="EditNote" asp-route-path="@path">Edit</a>
+    <a type="button" class="btn btn-secondary" asp-area="" asp-controller="Note" asp-action="DeleteNote" asp-route-path="@path">Delete</a>
+</div>

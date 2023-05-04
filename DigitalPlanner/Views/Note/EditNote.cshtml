@@ -1,0 +1,66 @@
+﻿@model DigitalPlanner.Models.Note
+@{
+    var title = Model.Name ?? "Untitled";
+    var directory = Model.Directory;
+}
+
+
+<script src="//cdn.ckeditor.com/4.19.0/full/ckeditor.js"></script>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <form asp-controller="Note" asp-action="UpdateOrCreate" method="post" enctype="multipart/form-data">
+                    <input asp-for="CreationDate" readonly hidden/>
+                    <input asp-for="Directory" readonly hidden/>
+                    <input asp-for="Id" readonly hidden/>
+                    @if(Model.Directory != "calendar")
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control" value="@title" name="Name">
+                        </div>
+                    }
+                    else
+                    {
+                        <input asp-for="Name" readonly hidden/>
+                        <input asp-for="NoteDate" readonly hidden/>
+                    }
+                    <div class="card-header">
+                        <i class="fas fa-pen-fancy mr-1"></i>
+                        Edit Note
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <textarea name="content" asp-for="Content" class="form-control textarea" rows="8"></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                            <script>
+                                    CKEDITOR.replace( 'content' );
+                            </script>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="form-group">
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* @section Scripts { *@
+@*     <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/balloon/ckeditor.js"></script> *@
+@*     <script> *@
+@*         BallonEditor *@
+@*             .create(document.querySelector('.textarea')) *@
+@*             .catch(error => { *@
+@*                 console.error(error); *@
+@*             }); *@
+@*         $(".custom-file-input").on("change", function () { *@
+@*             var fileName = $(this).val().split("\\").pop(); *@
+@*             $(this).siblings(".custom-file-label").addClass("selected").html(fileName); *@
+@*         }); *@
+@*     </script> *@
+@* } *@
